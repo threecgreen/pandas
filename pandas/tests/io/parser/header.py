@@ -286,3 +286,9 @@ q,r,s,t,u,v
             self.read_csv(StringIO(data), sep=',', header=['a', 'b'])
         with tm.assert_raises_regex(ValueError, msg):
             self.read_csv(StringIO(data), sep=',', header='string_header')
+
+    def test_singleton_header(self):
+        data = """a,b,c\n0,1,2\n1,2,3"""
+        df = self.read_csv(StringIO(data), header=[0])
+        # There shouldn't be any NaN values
+        assert not df.isnull().values.any()
