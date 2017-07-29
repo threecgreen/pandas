@@ -250,3 +250,18 @@ class TestDatetimeIndex(object):
                      index=pd.PeriodIndex(keys, name='idx'), name='s')
         result = ser.loc[keys]
         tm.assert_series_equal(result, exp)
+
+    def test_selecting_multi_rows_by_string(self):
+        # GH 16710
+        df = pd.DataFrame(np.arange(9).reshape(3, 3),
+                          columns=['A', 'B', 'C'],
+                          index=pd.date_range('1/1/2000',
+                                              periods=3, freq='D'))
+        expected = pd.DataFrame([[0, 1, 2],
+                                 [np.nan, np.nan, 5],
+                                 [np.nan, np.nan, 8]],
+                                columns=['A', 'B', 'C'],
+                                index=pd.date_range('1/1/2000',
+                                periods=3, freq='D'))
+        df.loc[['1/2/2000', '1/3/2000'], ['A', 'B']] = np.nan
+        tm.assert_frame_equal(df, expected)
